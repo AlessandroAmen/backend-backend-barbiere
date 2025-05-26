@@ -184,4 +184,23 @@ Route::prefix('api')->middleware(['api'])->group(function () {
             return response()->json(['message' => 'Errore durante la creazione dell\'appuntamento: ' . $e->getMessage()], 500, $headers);
         }
     })->withoutMiddleware(['web', 'csrf', 'api']);
+
+    // Rotte di test API
+    Route::get('/test-connection', function() {
+        return response()->json([
+            'message' => 'Connection test successful',
+            'timestamp' => now()->toISOString()
+        ]);
+    });
+
+    Route::get('/simple-test', function() {
+        return response()->json([
+            'status' => 'ok'
+        ]);
+    });
+});
+
+// Test route per verificare il funzionamento delle rotte web
+Route::get('/test', function () {
+    return response()->json(['message' => 'Web route test successful']);
 });

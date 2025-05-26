@@ -26,55 +26,79 @@ Route::get('/csrf-cookie', function () {
     return response()->json(['csrf_token' => csrf_token()]);
 });
 
-// Test connection route (available at both /api/test-connection and /test-connection)
-Route::get('/test-connection', function() {
-    return response()->json(['message' => 'Connection test successful']);
-})->withoutMiddleware(['auth:sanctum', 'api', 'csrf', 'web']);
+// Test connection route
 Route::get('test-connection', function() {
-    return response()->json(['message' => 'Connection test successful']);
-})->withoutMiddleware(['auth:sanctum', 'api', 'csrf', 'web']);
+    return response()->json([
+        'message' => 'Connection test successful',
+        'timestamp' => now()->toISOString()
+    ])
+    ->header('Access-Control-Allow-Origin', '*')
+    ->header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+    ->header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
 
 // Public routes
-Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login']);
-Route::post('/appointments', [AppointmentController::class, 'store'])->withoutMiddleware(['api', 'csrf', 'web']);
-Route::get('/test-connection', function() {
-    return response()->json(['message' => 'Connection test successful']);
-})->withoutMiddleware(['api', 'csrf', 'web']);
+Route::post('/register', [AuthController::class, 'register'])->middleware('cors');
+Route::post('/login', [AuthController::class, 'login'])->middleware('cors');
+Route::post('/appointments', [AppointmentController::class, 'store'])->middleware('cors');
 
 // Rotte pubbliche per barbieri
-Route::get('/barbers-test', [BarberTestController::class, 'index']);
-Route::get('/barbers/{id}', [BarberApiController::class, 'show']);
-Route::get('/regioni', [BarberApiController::class, 'getRegioni']);
-Route::get('/province/{regione}', [BarberApiController::class, 'getProvince']);
-Route::get('/users/role/barber', [UserController::class, 'getUsersByRole']);
-Route::get('/available-slots', [AppointmentController::class, 'getAvailableSlots'])->withoutMiddleware(['auth:sanctum', 'api']);
-Route::get('/get-appointment-details', [AppointmentController::class, 'getAppointmentDetails'])->withoutMiddleware(['auth:sanctum', 'api', 'web', 'cors']);
+Route::get('/barbers-test', [BarberTestController::class, 'index'])->middleware('cors');
+Route::get('/barbers/{id}', [BarberApiController::class, 'show'])->middleware('cors');
+Route::get('/regioni', [BarberApiController::class, 'getRegioni'])->middleware('cors');
+Route::get('/province/{regione}', [BarberApiController::class, 'getProvince'])->middleware('cors');
+Route::get('/users/role/barber', [UserController::class, 'getUsersByRole'])->middleware('cors');
+Route::get('/available-slots', [AppointmentController::class, 'getAvailableSlots'])->middleware('cors');
+Route::get('/get-appointment-details', [AppointmentController::class, 'getAppointmentDetails'])->middleware('cors');
 Route::get('/test-after-appointment-details', function() { return response()->json(['message' => 'Test after appointment details']); });
 
 // Test endpoint
 Route::get('/test', function() {
     return response()->json(['message' => 'API funzionante correttamente']);
-});
+})->middleware('cors');
 
 // Test route per i barbieri
 Route::get('/test-barbers', function() {
     return response()->json(['message' => 'Test barbers route works!']);
-});
+})->middleware('cors');
 
 // Test route per il controller di test
-Route::get('/test-controller', [TestController::class, 'index']);
+Route::get('/test-controller', [TestController::class, 'index'])->withoutMiddleware(['api', 'csrf', 'web'])->middleware('cors');
 
 // Test route per verificare connessione Android
 Route::get('/android-test', function() {
     return response()->json([
         'message' => 'Android connection test successful',
         'timestamp' => now()->toDateTimeString()
-    ]);
-});
+    ])
+    ->header('Access-Control-Allow-Origin', '*')
+    ->header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+    ->header('Access-Control-Allow-Headers', '*');
+})->withoutMiddleware(['api', 'csrf', 'web'])->middleware('cors');
+
+// Endpoint specifico per test mobile
+Route::get('/mobile-test', function() {
+    return response()->json([
+        'status' => 'success',
+        'message' => 'Mobile connection working',
+        'server_info' => [
+            'timestamp' => now()->toISOString(),
+            'server_ip' => request()->server('SERVER_ADDR'),
+            'client_ip' => request()->ip(),
+            'user_agent' => request()->header('User-Agent')
+        ]
+    ])
+    ->header('Access-Control-Allow-Origin', '*')
+    ->header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+    ->header('Access-Control-Allow-Headers', '*');
+})->withoutMiddleware(['auth:sanctum', 'api', 'csrf', 'web'])->middleware('cors');
+
+// Simple test route
+Route::get('/simple-test', function() {
+    return response()->json(['status' => 'ok']);
+})->middleware('cors');
 
 // Protected routes
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware(['auth:sanctum', 'cors'])->group(function () {
     Route::get('/user', [AuthController::class, 'me']);
     Route::post('/logout', [AuthController::class, 'logout']);
     

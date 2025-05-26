@@ -15,20 +15,20 @@ return [
     |
     */
 
-    'paths' => ['*'],  // Permette CORS su tutti i percorsi
+    'paths' => ['api/*', 'sanctum/csrf-cookie', '*'],
 
-    'allowed_methods' => ['*'],
+    'allowed_methods' => ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
 
-    'allowed_origins' => ['*'],  // In produzione, specificare i domini esatti
+    'allowed_origins' => ['*'],
 
     'allowed_origins_patterns' => [],
 
     'allowed_headers' => ['*'],
 
-    'exposed_headers' => [],
+    'exposed_headers' => [''],
 
-    'max_age' => 0,
+    'max_age' => 7200,  // 2 ore di cache per le preflight requests
 
-    'supports_credentials' => true,
+    'supports_credentials' => true,  // Manteniamo true per supportare l'autenticazione
 
 ]; 
