@@ -15,11 +15,11 @@ return [
     |
     */
 
-    'paths' => ['api/*', 'sanctum/csrf-cookie', 'test-connection'],
+    'paths' => ['*'],  // Permette CORS su tutti i percorsi
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['http://localhost:8081', 'http://localhost:8000'],
+    'allowed_origins' => ['*'],  // In produzione, specificare i domini esatti
 
     'allowed_origins_patterns' => [],
 
